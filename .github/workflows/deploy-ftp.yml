@@ -1,0 +1,51 @@
+name: Déploiement FTP
+
+# Déploie automatiquement le site sur l'hébergement FTP à chaque push
+# sur la branche, et permet aussi un déclenchement manuel.
+on:
+  push:
+    branches:
+      - main
+      - claude/wizardly-hawking-j3gbf
+  workflow_dispatch:
+
+concurrency:
+  group: deploiement-ftp
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Téléversement FTP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Synchronisation FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          # --- Identifiants (définis dans Settings → Secrets and variables → Actions) ---
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+
+          # --- Connexion ---
+          # FTPS explicite sur le port 21. Si le certificat du serveur pose
+          # problème, remplacez "ftps" par "ftp" ci-dessous.
+          port: 21
+          protocol: ftps
+
+          # --- Répertoires ---
+          # Contenu local à envoyer (racine du dépôt).
+          local-dir: ./
+          # Répertoire web public sur le serveur. Adaptez si nécessaire
+          # (ex : ./www/, ./public_html/, ./htdocs/).
+          server-dir: ./
+
+          # --- Fichiers à NE PAS téléverser ---
+          exclude:
+            - "**/.git*"
+            - "**/.git*/**"
+            - ".github/**"
+            - "README.md"
+            - "*.zip"

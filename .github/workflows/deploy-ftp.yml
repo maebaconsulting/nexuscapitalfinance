@@ -43,9 +43,9 @@ jobs:
           server-dir: ./
 
           # --- Fichiers à NE PAS téléverser ---
-          exclude:
-            - "**/.git*"
-            - "**/.git*/**"
-            - ".github/**"
-            - "README.md"
-            - "*.zip"
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            README.md
+            *.zip
